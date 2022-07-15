@@ -1,0 +1,284 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+    <changeSet id="user_tables" author="burmistrov_d">
+        <!-- USER -->
+        <createTable tableName="user_info">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="phone_number" type="VARCHAR(350)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(128)"/>
+            <column name="first_name" type="VARCHAR(128)"/>
+            <column name="last_name" type="VARCHAR(128)"/>
+            <column name="patronymic" type="VARCHAR(128)"/>
+            <column name="email" type="VARCHAR(128)"/>
+            <column name="age" type="BIGINT"/>
+            <column name="city" type="VARCHAR(128)"/>
+            <column name="description" type="VARCHAR(2048)"/>
+            <column name="password_changed" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login_time" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="created" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- CONFIRMATION -->
+        <createTable tableName="confirmation">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="user_confirmation_pkey"/>
+            </column>
+            <column name="login" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="session_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(100)"/>
+            <column name="attempt_count" type="INT"/>
+            <column name="created" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="domain_tables" author="burmistrov_d">
+        <createTable tableName="team">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="team_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="VARCHAR(128)">
+            </column>
+            <column name="description" type="VARCHAR(2056)">
+            </column>
+            <column name="organization" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="organization_name" type="VARCHAR(256)">
+            </column>
+        </createTable>
+
+        <createTable tableName="sport_type">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="sport_type_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="image">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="image_pkey"/>
+            </column>
+            <column name="content" type="bytea">
+            </column>
+        </createTable>
+
+        <createTable tableName="notification">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="notification_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="sport_type_image_link">
+            <column name="sport_type_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="sport_type_image_link_sport_type_id_fkey"
+                             referencedTableName="sport_type"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="image_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="sport_type_image_link_image_id_fkey"
+                             referencedTableName="image"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_team_link">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="user_team_link_user_id_fkey"
+                             referencedTableName="user_info"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="team_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="user_team_link_team_id_fkey"
+                             referencedTableName="team"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="leader" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_image_link">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="user_image_link_user_id_fkey"
+                             referencedTableName="user_info"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="image_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="user_image_link_image_id_fkey"
+                             referencedTableName="image"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="team_sport_type_link" author="burmistrov_d">
+        <createTable tableName="team_sport_type_link">
+            <column name="team_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="team_sport_type_link_team_id_fkey"
+                             referencedTableName="team"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="sport_type_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="team_sport_type_link_sport_type_fkey"
+                             referencedTableName="sport_type"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="user_sport_type_link" author="burmistrov_d">
+        <createTable tableName="user_sport_type_link">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="user_sport_type_link_user_id_fkey"
+                             referencedTableName="user_info"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="sport_type_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="user_sport_type_link_sport_type_fkey"
+                             referencedTableName="sport_type"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_gender" author="burmistrov_d">
+        <addColumn tableName="user_info">
+            <column type="boolean" defaultValue="false" name="gender"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_notification_fields_userId_type_viewed" author="burmistrov_d">
+        <addColumn tableName="notification">
+            <column name="user_id" type="BIGINT">
+                <constraints
+                        foreignKeyName="notification_user_id_fkey"
+                        referencedTableName="user_info"
+                        referencedColumnNames="id"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="notification">
+            <column name="type" type="VARCHAR(64)" />
+        </addColumn>
+        <addColumn tableName="notification">
+            <column name="viewed" type="TIMESTAMP WITH TIME ZONE">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="news" author="burmistrov_d">
+        <createTable tableName="news">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="news_pkey"/>
+            </column>
+            <column name="title" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(10000)">
+            </column>
+            <column name="created" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="news_image_link">
+            <column name="news_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="news_image_link_news_id_fkey"
+                             referencedTableName="news"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="image_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="news_image_link_image_id_fkey"
+                             referencedTableName="image"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="add_sport_types" author="bursmitrov_d">
+        <insert tableName="sport_type">
+            <column name="name" value="волейбол" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="баскетбол" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="настольный теннис" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="плавание" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="бадминтон" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="шахматы" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="многоборье" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="легкая атлетика" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="силовой экстрим" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="футбол" />
+        </insert>
+        <insert tableName="sport_type">
+            <column name="name" value="хоккей" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
